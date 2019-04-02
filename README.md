@@ -1,5 +1,7 @@
 # Facial Keypoint Detection
 
+<img src="images/keypts.jpg">
+
 This project is about defining and training a convolutional neural network to perform facial keypoint detection, and using computer vision techniques to transform images of faces.
 
 This project is directly inspired by the @Udacity Computer Vision Nanodegree and has been modified in my way in <a href="https://pytorch.org/get-started/locally/">Pytorch</a>.
