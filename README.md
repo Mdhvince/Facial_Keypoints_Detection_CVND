@@ -13,6 +13,26 @@ This project is directly inspired by the @Udacity Computer Vision Nanodegree and
 - training.ipynb: Notebook using Google Colab GPU to train the CNN
 - transformation.py: Python file that contains all classes to transform the data (images and keypoints)
 
+## Pipeline
+
+### Customized Dataset
+```
+class FacialKeypointsDataset(Dataset):
+    """Face Landmarks dataset."""
+
+    def __init__(self, csv_file, root_dir, transform=None):
+        pass
+
+    def __len__(self):
+        pass
+
+    def __getitem__(self, idx):
+        pass
+```
+
+### Preprocessing/Transform (Images and Keypoints)
+
+
 ## Authors
 Medhy Vinceslas
 
