@@ -39,14 +39,14 @@ class Normalize(object):
 
 
 class Rescale(object):
-    """Rescale the image in a sample to a given size.
+    """Rescale the image in a sample to a given size.  
 
-    Args:
-        output_size (tuple or int): Desired output size. If tuple, output is
-        matched to output_size. If int, smaller of image edges is matched
-        to output_size keeping aspect ratio the same.
+    Args:  
+        output_size (tuple or int): Desired output size. If tuple, output is  
+        matched to output_size. If int, smaller of image edges is matched  
+        to output_size keeping aspect ratio the same.  
     """
-    pass
+    pass  
 
 
 
@@ -74,7 +74,36 @@ transform = transforms.Compose([
 ])
 ```
 
+### Prepare Validation and Load Data
+```
+def train_valid_split(training_set, validation_size):
+    """ Function that split our dataset into train and validation
+        given in parameter the training set and the % of sample for validation"""
+    
+    pass
 
+
+
+
+train_set = FacialKeypointsDataset(csv_file=csv_file,
+                                   root_dir=root_dir,
+                                   transform=transform)
+
+train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
+
+
+train_loader = DataLoader(train_set,
+                          batch_size=batch_size,
+                          sampler=train_sampler,
+                          num_workers=num_workers)
+
+valid_loader = torch.utils.data.DataLoader(train_set,
+                                           batch_size=batch_size,
+                                           sampler=valid_sampler,
+                                           num_workers=num_workers)
+```
+
+### Build the CNN Architecture
 
 
 
