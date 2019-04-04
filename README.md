@@ -31,6 +31,52 @@ class FacialKeypointsDataset(Dataset):
 ```
 
 ### Preprocessing/Transform (Images and Keypoints)
+```
+class Normalize(object):
+    """Convert a color image to grayscale and normalize the color range to [0,1]."""        
+    pass
+
+
+
+class Rescale(object):
+    """Rescale the image in a sample to a given size.
+
+    Args:
+        output_size (tuple or int): Desired output size. If tuple, output is
+        matched to output_size. If int, smaller of image edges is matched
+        to output_size keeping aspect ratio the same.
+    """
+    pass
+
+
+
+class RandomCrop(object):
+    """Crop randomly the image in a sample.
+
+    Args:
+        output_size (tuple or int): Desired output size. If int, square crop
+            is made.
+    """
+    pass
+
+
+
+class ToTensor(object):
+    pass
+
+
+
+transform = transforms.Compose([
+    Rescale(256),
+    RandomCrop(224),
+    Normalize(),
+    ToTensor()
+])
+```
+
+
+
+
 
 
 ## Authors
