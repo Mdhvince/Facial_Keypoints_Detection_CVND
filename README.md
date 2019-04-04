@@ -104,8 +104,25 @@ valid_loader = torch.utils.data.DataLoader(train_set,
 ```
 
 ### Build the CNN Architecture
+```
+class Net(nn.Module):
 
+    def __init__(self):
+        super(Net, self).__init__() 
+        pass
+        
+        
 
+        
+    def forward(self, x):
+        pass
+```
+
+### Train
+
+### Select Region of Interest
+
+### Inference
 
 
 ## Authors
