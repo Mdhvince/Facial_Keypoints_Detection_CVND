@@ -107,3 +107,20 @@ def train(n_epochs, save_location_path):
         val_loss_record.append(valid_loss)
         
     return train_loss_record, val_loss_record
+
+
+def main():
+    batch_size = 128
+    num_workers = 4
+    valid_size = 0.2
+    csv_file = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/data/training_frames_keypoints.csv'
+    root_dir = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/data/training/'
+    save_location_path = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/modelx.pt'
+    n_epochs = 600
+
+    train_set = create_dataset(csv_file, root_dir)
+    train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
+    train_loader, valid_loader = build_lodaers(batch_size, valid_size, num_workers, csv_file, root_dir)
+    #visualize(20, train_loader, 4, 5)
+
+    train_loss_record, val_loss_record = train(n_epochs, save_location_path)
