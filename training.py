@@ -28,11 +28,7 @@ def train(n_epochs, save_location_path):
     criterion = nn.MSELoss()
     optimizer = optim.Adam(params = model.parameters(), lr = 1e-5)
 
-
     valid_loss_min = np.Inf
-    
-    train_loss_record = []
-    val_loss_record = []
     
     print('Start training')
     model.train()
@@ -102,12 +98,6 @@ def train(n_epochs, save_location_path):
             torch.save(model.state_dict(), save_location_path)
             valid_loss_min = valid_loss
             
-       
-        train_loss_record.append(train_loss)
-        val_loss_record.append(valid_loss)
-        
-    return train_loss_record, val_loss_record
-
 
 def main():
     batch_size = 128
@@ -123,4 +113,9 @@ def main():
     train_loader, valid_loader = build_lodaers(batch_size, valid_size, num_workers, csv_file, root_dir)
     #visualize(20, train_loader, 4, 5)
 
-    train_loss_record, val_loss_record = train(n_epochs, save_location_path)
+    train(n_epochs, save_location_path)
+    
+    
+
+if __name__=='__main__':
+    main()
