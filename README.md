@@ -10,7 +10,9 @@ This project is directly inspired by the @Udacity Computer Vision Nanodegree and
 - custom_dataset.py: Create the dataset using the Dataset class from Pytorch
 - inference.ipynb: Notebook for inference
 - network.py: Create the architecture of the CNN according to <a href="https://arxiv.org/pdf/1710.00977.pdf">this paper</a>
-- training.ipynb: Notebook using Google Colab GPU to train the CNN
+- training.py: train CNN
+- helper.py: helper function to visualize batches
+- load_data.py: split data into train, val then create data loaders
 - transformation.py: Python file that contains all classes to transform the data (images and keypoints)
 
 ## Pipeline
