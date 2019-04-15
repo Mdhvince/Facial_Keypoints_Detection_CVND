@@ -5,8 +5,10 @@ from torchvision import datasets, models
 import torch.optim as optim
 import torch.nn.init as I
 
+from load_data import *
+from network import Net, Net2
 
-def train(n_epochs, save_location_path):
+def train(n_epochs, train_loader, valid_loader, save_location_path):
     print('Weight initialization ...')
     train_on_gpu = torch.cuda.is_available()
 
@@ -59,8 +61,12 @@ def train(n_epochs, save_location_path):
 
             # Flatten keypoints & convert data to FloatTensor for regression loss
             key_pts = key_pts.view(key_pts.size(0), -1)
-            key_pts = key_pts.type(torch.cuda.FloatTensor)
-            images = images.type(torch.cuda.FloatTensor)
+            if train_on_gpu:
+                key_pts = key_pts.type(torch.cuda.FloatTensor)
+                images = images.type(torch.cuda.FloatTensor)
+            else:
+                key_pts = key_pts.type(torch.FloatTensor)
+                images = images.type(torch.FloatTensor)
 
 
             optimizer.zero_grad()                           # Clear the gradient        
@@ -85,8 +91,12 @@ def train(n_epochs, save_location_path):
 
 
             key_pts = key_pts.view(key_pts.size(0), -1)
-            key_pts = key_pts.type(torch.cuda.FloatTensor)
-            images = images.type(torch.cuda.FloatTensor)
+            if train_on_gpu:
+                key_pts = key_pts.type(torch.cuda.FloatTensor)
+                images = images.type(torch.cuda.FloatTensor)
+            else:
+                key_pts = key_pts.type(torch.FloatTensor)
+                images = images.type(torch.FloatTensor)
 
             output = model(images)
             loss = criterion(output, key_pts)
@@ -111,17 +121,19 @@ def main():
     batch_size = 128
     num_workers = 4
     valid_size = 0.2
-    csv_file = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/data/training_frames_keypoints.csv'
-    root_dir = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/data/training/'
-    save_location_path = '/content/drive/My Drive/Colab Notebooks/Facial_keypoints/modelx.pt'
+    csv_file = 'data/training_frames_keypoints.csv'
+    root_dir = 'data/training/'
+    save_location_path = 'saved_models/modelx.pt'
     n_epochs = 600
 
     train_set = create_dataset(csv_file, root_dir)
     train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
-    train_loader, valid_loader = build_lodaers(batch_size, valid_size, num_workers, csv_file, root_dir)
+    train_loader, valid_loader = build_lodaers(train_set, train_sampler, valid_sampler,
+                                               batch_size, valid_size,
+                                               num_workers, csv_file, root_dir)
     #visualize(20, train_loader, 4, 5)
 
-    train(n_epochs, save_location_path)
+    train(n_epochs, train_loader, valid_loader, save_location_path)
     
     
 
