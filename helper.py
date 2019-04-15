@@ -1,4 +1,7 @@
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 def visualize(num_images, train_loader, row, col):
   # obtain one batch of training images
   batch = next(iter(train_loader))
