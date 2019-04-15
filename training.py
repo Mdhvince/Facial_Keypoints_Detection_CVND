@@ -1,3 +1,4 @@
+
 def train(n_epochs, save_location_path):
     print('Weight initialization ...')
     train_on_gpu = torch.cuda.is_available()

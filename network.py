@@ -2,9 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# can use the below import to choose to initialize the weights of the Net
-import torch.nn.init as I
-
 class Net(nn.Module):
 
     def __init__(self):
