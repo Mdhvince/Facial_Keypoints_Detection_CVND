@@ -7,17 +7,18 @@ This project is about defining and training a convolutional neural network to pe
 This project is directly inspired by the @Udacity Computer Vision Nanodegree and has been modified in my way in <a href="https://pytorch.org/get-started/locally/">Pytorch</a>.
 
 ## File Description
-- custom_dataset.py: Create the dataset using the Dataset class from Pytorch
-- inference.ipynb: Notebook for inference
-- network.py: Create the architecture of the CNN according to <a href="https://arxiv.org/pdf/1710.00977.pdf">this paper</a>
-- training.py: train CNN
-- helper.py: helper function to visualize batches
-- load_data.py: split data into train, val then create data loaders
-- transformation.py: Python file that contains all classes to transform the data (images and keypoints)
+- scripts/custom_dataset.py: Create the dataset using the Dataset class from Pytorch
+- Notebook_PDF/inference.pdf:PDF version of the Notebook for inference
+- scripts/network.py: Create the architecture of the CNN according to <a href="https://arxiv.org/pdf/1710.00977.pdf">this paper</a>
+- scripts/training.py: train CNN
+- scritps/helper.py: helper function to visualize batches
+- scritps/load_data.py: split data into train, val then create data loaders
+- scritps/transformation.py: Python file that contains all classes to transform the data (images and keypoints)
 
 ## Pipeline
 
 ### Customized Dataset
+In the python file scripts/custom_dataset.py, you'll find how to custom a dataset in Pytorch. As the <a href="https://pytorch.org/docs/stable/_modules/torch/utils/data/dataset.html">documentation of the Dataset Class</a> said, we have to override `__len__` and `__getitem__`  
 ```
 class FacialKeypointsDataset(Dataset):
     """Face Landmarks dataset."""
@@ -33,12 +34,11 @@ class FacialKeypointsDataset(Dataset):
 ```
 
 ### Preprocessing/Transform (Images and Keypoints)
+Overview of scripts/transformation.py with the necessary transformation to apply on each images and labels before they fed in the CNN
 ```
 class Normalize(object):
     """Convert a color image to grayscale and normalize the color range to [0,1]."""        
     pass
-
-
 
 class Rescale(object):
     """Rescale the image in a sample to a given size.  
@@ -50,8 +50,6 @@ class Rescale(object):
     """
     pass  
 
-
-
 class RandomCrop(object):
     """Crop randomly the image in a sample.
 
@@ -62,47 +60,35 @@ class RandomCrop(object):
     pass
 
 
-
 class ToTensor(object):
     pass
 
-
-
-transform = transforms.Compose([
-    Rescale(256),
-    RandomCrop(224),
-    Normalize(),
-    ToTensor()
-])
 ```
 
 ### Prepare Validation and Load Data
+In the scripts/load_data.py file you'll find the functions to split, load and transform the data.  
+Here is a overview
 ```
-def train_valid_split(training_set, validation_size):
-    """ Function that split our dataset into train and validation
-        given in parameter the training set and the % of sample for validation"""
+def create_dataset(csv_file, root_dir):
+    print('Creating dataset ...')
+    transform = transforms.Compose([
+        Rescale(256),
+        RandomCrop(224),
+        Normalize(),
+        ToTensor()
+    ])
     
+    train_set = FacialKeypointsDataset(csv_file=csv_file,
+                                       root_dir=root_dir,
+                                       transform=transform)
+    return train_set
+
+def train_valid_split(training_set, validation_size):
+        pass
+      
+
+def build_lodaers(train_set, train_sampler, valid_sampler, batch_size, valid_size, num_workers, csv_file, root_dir):
     pass
-
-
-
-
-train_set = FacialKeypointsDataset(csv_file=csv_file,
-                                   root_dir=root_dir,
-                                   transform=transform)
-
-train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
-
-
-train_loader = DataLoader(train_set,
-                          batch_size=batch_size,
-                          sampler=train_sampler,
-                          num_workers=num_workers)
-
-valid_loader = torch.utils.data.DataLoader(train_set,
-                                           batch_size=batch_size,
-                                           sampler=valid_sampler,
-                                           num_workers=num_workers)
 ```
 
 ### Build the CNN Architecture
@@ -111,21 +97,29 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__() 
-        pass
-        
-        
-
+        pass 
         
     def forward(self, x):
         pass
 ```
 
 ### Train
+```
+def train(n_epochs, train_loader, valid_loader, save_location_path):
+    pass
 
-### Select Region of Interest
+def main():
+    #Call all the previous classes and functions
+    
+if __name__=='__main__':
+    main()
+```
 
 ### Inference
+The Inference consist in finding the ROI (Region of interest) in my case (the face) using opencv cascad file for face detection, crop the ROI then feed to the model
 
+### Other
+The model was trained on <a href="https://colab.research.google.com/notebooks/welcome.ipynb#recent=true">Google Colab</a>. It can be largely improved. I've based my approach of this case on <a href="https://arxiv.org/pdf/1710.00977.pdf">this paper</a>. 
 
 ## Authors
 Medhy Vinceslas
