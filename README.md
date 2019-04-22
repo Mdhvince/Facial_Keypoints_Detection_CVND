@@ -6,6 +6,8 @@ This project is about defining and training a convolutional neural network to pe
 
 This project is directly inspired by the @Udacity Computer Vision Nanodegree and has been modified in my way in <a href="https://pytorch.org/get-started/locally/">Pytorch</a>.
 
+An Inference part of this repo of this project can be found <a href="https://github.com/Mdhvince/Real_Time_Facial_Kpts_Inference">here</a> 
+
 ## File Description
 - scripts/custom_dataset.py: Create the dataset using the Dataset class from Pytorch
 - Notebook_PDF/inference.pdf:PDF version of the Notebook for inference
