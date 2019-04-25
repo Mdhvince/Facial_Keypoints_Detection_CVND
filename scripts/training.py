@@ -8,45 +8,83 @@ import torch.optim as optim
 import torch.nn.init as I
 
 from load_data import *
-from network import Net, Net2
+from network import Net
 
-def train(n_epochs, train_loader, valid_loader, save_location_path):
-    print('Weight initialization ...')
-    train_on_gpu = torch.cuda.is_available()
+from bokeh.io import curdoc
+from bokeh.layouts import column
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
 
-    #def init_weights(m):
-        #if type(m) == nn.Linear:
-            #I.xavier_uniform(m.weight)
+from functools import partial
+from threading import Thread
+from tornado import gen
+
+
+batch_size = 128
+num_workers = 4
+valid_size = 0.2
+csv_file = '../data/training_frames_keypoints.csv'
+root_dir = '../data/training/'
+save_location_path = 'saved_models/modelx.pt'
+n_epochs = 600
+
+train_set = create_dataset(csv_file, root_dir)
+train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
+train_loader, valid_loader = build_lodaers(train_set, train_sampler, valid_sampler,
+                                           batch_size, valid_size,
+                                           num_workers, csv_file, root_dir)
+#visualize(20, train_loader, 4, 5)
+
+
+source = ColumnDataSource(data={'epochs': [],
+                                'trainlosses': [],
+                                'vallosses': [] }
+)
+
+plot = figure(plot_width=1000)
+plot.line(x= 'epochs', y='trainlosses',
+          color='green', alpha=0.8, legend='Train loss', line_width=2,
+          source=source)
+
+plot.line(x= 'epochs', y='vallosses',
+          color='red', alpha=0.8, legend='Val loss', line_width=2,
+          source=source)
+
+#train(n_epochs, train_loader, valid_loader, save_location_path)
+
+# - Add plot to the current doc
+doc = curdoc()
+doc.add_root(plot)
+
+@gen.coroutine
+def update(new_data):
+    source.stream(new_data)
+
+def train(n_epochs=n_epochs,
+          train_loader=train_loader, valid_loader=valid_loader,
+          save_location_path=save_location_path):
+
+    train_on_gpu = torch.cuda.is_available() 
     
-    # takes in a module and applies the specified weight initialization
-    def weights_init_uniform_rule(m):
-        classname = m.__class__.__name__
-        # for every Linear layer in a model..
-        if classname.find('Linear') != -1:
-            # get the number of the inputs
-            n = m.in_features
-            y = 1.0/np.sqrt(n)
-            m.weight.data.uniform_(-y, y)
-            m.bias.data.fill_(0)
+    def init_weights(m):
+        if isinstance(m, nn.Linear):
+            I.xavier_uniform_(m.weight)
     
 
     model = Net()
-    model.apply(weights_init_uniform_rule)
-    #model.apply(init_weights)
+    model.apply(init_weights)
 
     if train_on_gpu:
         model.cuda()
 
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(params = model.parameters(), lr = 1e-5)
+    optimizer = optim.Adam(params = model.parameters(), lr = 0.001)
 
     valid_loss_min = np.Inf
     
-    print('Start training')
     model.train()
 
     for epoch in range(1, n_epochs+1):
-
         # Keep track of training and validation loss
         train_loss = 0.0
         valid_loss = 0.0
@@ -78,9 +116,7 @@ def train(n_epochs, train_loader, valid_loader, save_location_path):
             optimizer.step()                                # Perform updates using calculated gradients
 
             train_loss += loss.item()*images.size(0)
- 
-
-
+        
         # Validation
         model.eval()
         for data in valid_loader:
@@ -109,35 +145,21 @@ def train(n_epochs, train_loader, valid_loader, save_location_path):
         train_loss = train_loss/len(train_loader)
         valid_loss = valid_loss/len(valid_loader)
 
-        # print training/validation statistics 
-        print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
+        new_data = {'epochs': [epoch],
+                    'trainlosses': [train_loss],
+                    'vallosses': [valid_loss] }
 
-        # save model if validation loss has decreased
-        if valid_loss <= valid_loss_min:
-            print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
-            torch.save(model.state_dict(), save_location_path)
-            valid_loss_min = valid_loss
-            
+        doc.add_next_tick_callback(partial(update, new_data))
 
-def main():
-    batch_size = 128
-    num_workers = 4
-    valid_size = 0.2
-    csv_file = 'data/training_frames_keypoints.csv'
-    root_dir = 'data/training/'
-    save_location_path = 'saved_models/modelx.pt'
-    n_epochs = 600
+        for key, val in new_data.items():
+            print(f"{key}: {val}")
+            print(" ")
 
-    train_set = create_dataset(csv_file, root_dir)
-    train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
-    train_loader, valid_loader = build_lodaers(train_set, train_sampler, valid_sampler,
-                                               batch_size, valid_size,
-                                               num_workers, csv_file, root_dir)
-    #visualize(20, train_loader, 4, 5)
+#global update
+# - Call the train() function each 1s (1000ms)
+#doc.add_periodic_callback(train, 1000)
+thread = Thread(target=train)
+thread.start()
 
-    train(n_epochs, train_loader, valid_loader, save_location_path)
-    
-    
 
-if __name__=='__main__':
-    main()
+

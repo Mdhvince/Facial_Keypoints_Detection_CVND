@@ -20,7 +20,7 @@ class FacialKeypointsDataset(Dataset):
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
-        self.key_pts_frame = pd.read_csv(csv_file)
+        self.key_pts_frame = pd.read_csv(csv_file).head(100)
         self.root_dir = root_dir
         self.transform = transform
 
@@ -40,7 +40,7 @@ class FacialKeypointsDataset(Dataset):
         if(image.shape[2] == 4):
             image = image[:,:,0:3]
         
-        key_pts = self.key_pts_frame.iloc[idx, 1:].as_matrix()
+        key_pts = self.key_pts_frame.iloc[idx, 1:].values
         key_pts = key_pts.astype('float').reshape(-1, 2)
         sample = {'image': image, 'keypoints': key_pts}
 

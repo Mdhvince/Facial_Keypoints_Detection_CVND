@@ -9,10 +9,10 @@ from transformation import *
 from custom_dataset import FacialKeypointsDataset
 
 def create_dataset(csv_file, root_dir):
-    print('Creating dataset ...')
+    #print('Creating dataset ...')
     transform = transforms.Compose([
-        Rescale(256),
-        RandomCrop(224),
+        Rescale(97),
+        RandomCrop(96),
         Normalize(),
         ToTensor()
     ])
@@ -28,7 +28,7 @@ def train_valid_split(training_set, validation_size):
         given in parameter the training set and the % of sample for 
         validation"""
     
-    print('Splitting data ...')
+    #print('Splitting data ...')
     # obtain training indices that will be used for validation
     num_train = len(training_set)
     indices = list(range(num_train))
@@ -44,7 +44,7 @@ def train_valid_split(training_set, validation_size):
       
 
 def build_lodaers(train_set, train_sampler, valid_sampler, batch_size, valid_size, num_workers, csv_file, root_dir):
-    print('Creating loaders ...')
+    #print('Creating loaders ...')
     train_loader = DataLoader(train_set,
                               batch_size=batch_size,
                               sampler=train_sampler,
@@ -54,5 +54,5 @@ def build_lodaers(train_set, train_sampler, valid_sampler, batch_size, valid_siz
                                                batch_size=batch_size,
                                                sampler=valid_sampler,
                                                num_workers=num_workers)
-    print('Done !')
+    #print('Done !')
     return train_loader, valid_loader
