@@ -9,8 +9,8 @@ import torch.nn.init as I
 from load_data import *
 from network import Net
 
-from viz import *
-from epochsviz import Epochsviz
+#from viz import *
+from viz.epochsviz import Epochsviz
 
 batch_size = 128
 num_workers = 4
@@ -18,7 +18,7 @@ valid_size = 0.2
 csv_file = '../data/training_frames_keypoints.csv'
 root_dir = '../data/training/'
 save_location_path = 'saved_models/modelx.pt'
-n_epochs = 600
+n_epochs = 5
 
 train_set = create_dataset(csv_file, root_dir)
 train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
@@ -119,7 +119,7 @@ def train(n_epochs=n_epochs,
                        current_train_loss=train_loss,
                        current_val_loss=valid_loss)
 
-        
+    #eviz.stop()      
 
 eviz.start_thread(train_function=train)
 

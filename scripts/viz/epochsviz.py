@@ -50,7 +50,7 @@ class Epochsviz:
         self.doc.add_root(self.plot)
 
 
-        with open("color_list.pkl", "rb") as f:
+        with open("viz/color_list.pkl", "rb") as f:
             self.list_color = pickle.load(f)
 
         assert (self.color_train in self.list_color),(
@@ -79,8 +79,8 @@ class Epochsviz:
         self.doc.add_next_tick_callback(partial(self.update, new_data))
 
     def start_thread(self, train_function):
-        thread = Thread(target=train_function)
-        thread.start()
+        self.thread = Thread(target=train_function)
+        self.thread.start()
 
 
 
