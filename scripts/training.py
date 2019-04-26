@@ -9,6 +9,7 @@ import torch.nn.init as I
 from load_data import *
 from network import Net
 
+from viz import *
 from epochsviz import Epochsviz
 
 batch_size = 128
