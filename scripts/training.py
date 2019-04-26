@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import torch
 import torch.nn as nn
 import torchvision
@@ -10,15 +9,7 @@ import torch.nn.init as I
 from load_data import *
 from network import Net
 
-from bokeh.io import curdoc
-from bokeh.layouts import column
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure
-
-from functools import partial
-from threading import Thread
-from tornado import gen
-
+from epochsviz import Epochsviz
 
 batch_size = 128
 num_workers = 4
@@ -33,32 +24,8 @@ train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
 train_loader, valid_loader = build_lodaers(train_set, train_sampler, valid_sampler,
                                            batch_size, valid_size,
                                            num_workers, csv_file, root_dir)
-#visualize(20, train_loader, 4, 5)
 
-
-source = ColumnDataSource(data={'epochs': [],
-                                'trainlosses': [],
-                                'vallosses': [] }
-)
-
-plot = figure(plot_width=1000)
-plot.line(x= 'epochs', y='trainlosses',
-          color='green', alpha=0.8, legend='Train loss', line_width=2,
-          source=source)
-
-plot.line(x= 'epochs', y='vallosses',
-          color='red', alpha=0.8, legend='Val loss', line_width=2,
-          source=source)
-
-#train(n_epochs, train_loader, valid_loader, save_location_path)
-
-# - Add plot to the current doc
-doc = curdoc()
-doc.add_root(plot)
-
-@gen.coroutine
-def update(new_data):
-    source.stream(new_data)
+eviz = Epochsviz()
 
 def train(n_epochs=n_epochs,
           train_loader=train_loader, valid_loader=valid_loader,
@@ -145,21 +112,15 @@ def train(n_epochs=n_epochs,
         train_loss = train_loss/len(train_loader)
         valid_loss = valid_loss/len(valid_loader)
 
-        new_data = {'epochs': [epoch],
-                    'trainlosses': [train_loss],
-                    'vallosses': [valid_loss] }
+        print(f"epoch: {epoch} \t trainLoss: {train_loss} \t valLoss: {valid_loss}")
 
-        doc.add_next_tick_callback(partial(update, new_data))
+        eviz.send_data(current_epoch=epoch,
+                       current_train_loss=train_loss,
+                       current_val_loss=valid_loss)
 
-        for key, val in new_data.items():
-            print(f"{key}: {val}")
-            print(" ")
+        
 
-#global update
-# - Call the train() function each 1s (1000ms)
-#doc.add_periodic_callback(train, 1000)
-thread = Thread(target=train)
-thread.start()
+eviz.start_thread(train_function=train)
 
 
 
