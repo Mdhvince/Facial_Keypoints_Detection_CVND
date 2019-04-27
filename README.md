@@ -16,7 +16,7 @@ An Inference part of this repo of this project can be found <a href="https://git
 - scritps/helper.py: helper function to visualize batches
 - scritps/load_data.py: split data into train, val then create data loaders
 - scritps/transformation.py: Python file that contains all classes to transform the data (images and keypoints)
-- viz/: High level class for visualizing epochs val loss and train loss in real time
+- Epochsviz/: High level class for visualizing epochs val loss and train loss in real time,<a href="https://github.com/Mdhvince/Epochsviz">see documentation</a>
 
 ## Pipeline
 
