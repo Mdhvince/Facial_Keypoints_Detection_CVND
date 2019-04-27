@@ -9,8 +9,9 @@ import torch.nn.init as I
 from load_data import *
 from network import Net
 
-#from viz import *
-from viz.epochsviz import Epochsviz
+from Epochsviz.epochsviz import Epochsviz
+
+#from letmeviz import Epochsviz
 
 batch_size = 128
 num_workers = 4
@@ -119,9 +120,6 @@ def train(n_epochs=n_epochs,
                        current_train_loss=train_loss,
                        current_val_loss=valid_loss)
 
-    #eviz.stop()      
 
 eviz.start_thread(train_function=train)
-
-
 
